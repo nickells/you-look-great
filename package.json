@@ -1,0 +1,13 @@
+{
+  "name": "you-look-great",
+  "version": "1.0.0",
+  "description": "hide your face",
+  "main": "hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nickells",
+  "license": "ISC",
+  "dependencies": {
+  }
+}
