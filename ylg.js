@@ -1,13 +1,28 @@
-function waitForElement (selectorFunc) {
+const getDivsToMask = () => [
+  document.querySelectorAll('div[jsname="Nl0j0e"]')[0], // upper-right thumb  
+  // document.querySelectorAll('div[jsname="fniDcc"]')[0] // not sure what this was supposed to be
+]
+
+const masks = []
+
+chrome.runtime.onMessage.addListener((request, sender, sendMessage) => {
+  const status = request.status
+  if (status === true) {
+    masks.forEach(elem => elem.classList.remove('hidden'))
+  }
+  else {
+    masks.forEach(elem => elem.classList.add('hidden'))
+  }
+})
+
+function waitForElements() {
   return new Promise((resolve, reject) => {
     try {
       let int
       const checkIfExists = () => {
-        if (!selectorFunc()) return
-        else {
-          if (int !== undefined) clearInterval(int)
-          resolve(selectorFunc())
-        }
+        if (getDivsToMask().every(item => item === undefined)) return
+          console.log('its ready!', getDivsToMask())
+          resolve(getDivsToMask())
       }
       checkIfExists()
       int = setInterval(checkIfExists, 50)
@@ -24,13 +39,16 @@ function createBlock() {
   return mask
 }
 
-function startScript (returnedElement) {
+function startScript() {
   const block = createBlock()
-  returnedElement.appendChild(block)
+  getDivsToMask().forEach(elem => {
+    masks.push(block)
+  })
+  chrome.runtime.sendMessage({
+    type: 'boot'
+  })
 }
 
-const self = () => document.querySelectorAll('div[jsname="Nl0j0e"]')[0]
-
-waitForElement(self)
-.then((elem) => startScript(elem))
-.catch(console.warn)
+waitForElements()
+  .then(startScript)
+  .catch(console.warn)
